@@ -25,6 +25,22 @@ const columns: Column[] = [
   },
 ];
 
+// Column configuration
+const customColumns: Column[] = [
+  { key: 'id', title: 'ID', sortable: true, fixed: 'left', customSort: (a, b) => a.name.localeCompare(b.name) },
+  { key: 'name', title: 'Name', sortable: true },
+  { key: 'age', title: 'Age', sortable: true },
+  {
+    key: 'action',
+    title: 'Action',
+    fixed: 'right',
+    render: (data: any, row: any) => (
+      <button onClick={() => alert(`You clicked ${data} for ${row.name}`)}>{data}</button>
+    ),
+  },
+];
+
+
 // Mock API function to simulate sorting
 const mockFetchData = async (sortKey: string, sortOrder: SortOrder) => {
   console.log(`Fetching data sorted by ${sortKey} in ${sortOrder} order`);
@@ -54,19 +70,30 @@ const meta: Meta<TableProps> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  argTypes: {
-    fetchData: { action: 'fetchData' }, // Capture fetchData actions
-  },
 };
 
 export default meta;
 
 type Story = StoryObj<TableProps>;
 
-export const Default: Story = {
+export const DefaultSort: Story = {
   args: {
     data: sampleData,
     columns,
+  },
+};
+
+export const BackendSort: Story = {
+  args: {
+    data: sampleData,
+    columns,  
     fetchData: mockFetchData, 
+  },
+};
+
+export const CustomSort: Story = {
+  args: {
+    data: sampleData,
+    columns:customColumns,  
   },
 };

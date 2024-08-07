@@ -1,0 +1,1 @@
+export type RecordType<T = any, K extends string | number | symbol = string> = Record<K, T>;

@@ -9,8 +9,25 @@ const Table: React.FC<TableProps> = ({ columns, fetchData, data }) => {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortOrder} | null>(null);
   const [tableData, setTableData] = useState<{ [key: string]: any }[]>(data);
 
-  // Function to handle sorting
-  const handleSort = async (key: string) => {
+  // 預設的排序方法
+  const defaultSort = (a: any, b: any, key: string,) => {
+    const valA = a[key];
+    const valB = b[key];
+  
+    if (typeof valA === 'number' && typeof valB === 'number') {
+      return valA - valB;
+    }
+  
+    if (typeof valA === 'string' && typeof valB === 'string') {
+      return valA.localeCompare(valB);
+    }
+  
+    //其他類型轉換為字串後進行比較
+    return String(valA).localeCompare(String(valB));
+  };
+
+  // 待處理：放到custom hook內
+  const handleSort = async (key: string, customSort?: (a: any, b: any) => number) => {
     let direction: SortOrder = SortOrderEnum.ASCEND;
     if (sortConfig && sortConfig.key === key && sortConfig.direction === SortOrderEnum.ASCEND) {
       direction = SortOrderEnum.DESCEND;
@@ -18,7 +35,18 @@ const Table: React.FC<TableProps> = ({ columns, fetchData, data }) => {
 
     setSortConfig({ key, direction });
 
-    // Fetch sorted data from the backend
+    // 如果沒有 fetchData則使用前端的排序
+    if (!fetchData) {
+      const sortedData = [...tableData].sort((a, b) =>{
+        const sortValue = customSort ? customSort(a, b) : defaultSort(a, b, key);
+        return direction === SortOrderEnum.ASCEND ? sortValue : -sortValue;
+      });
+
+      setTableData(sortedData);
+      return;
+   }
+
+    // 如果有 fetchData則使用後端的排序
     try {
       const sortedData = await fetchData(key, direction);
       setTableData(sortedData);
@@ -39,7 +67,7 @@ const Table: React.FC<TableProps> = ({ columns, fetchData, data }) => {
           {columns.map((column) => (
             <th
               key={column.key}
-              onClick={() => column.sortable && handleSort(column.key)}
+              onClick={() => column.sortable && handleSort(column.key,column.customSort)}
               style={{ position: column.fixed ? 'sticky' : 'static', [column.fixed || '']: 0 }}
             >
               {column.title} {sortConfig?.key === column.key ? (sortConfig.direction === SortOrderEnum.ASCEND ? '↑' : '↓') : ''}
