@@ -1,63 +1,49 @@
 
 import React, { useEffect, useState } from 'react';
-import { SortOrder, TableProps } from './interface';
+import { TableProps, TableState } from './interface';
 import { SortOrderEnum } from './enum';
+import { RecordType } from "../../util/type";
+import useSort from './hooks/useSort';
 
 
 
-const Table: React.FC<TableProps> = ({ columns, fetchData, data }) => {
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortOrder} | null>(null);
+const Table: React.FC<TableProps> = ({ columns, onChange, data }) => {
   const [tableData, setTableData] = useState<{ [key: string]: any }[]>(data);
+  const [tableState, setTableState] = useState<TableState>({
+    sorter: { field: '', sortOrder: SortOrderEnum.DESCEND },
+    currentData: [] as RecordType[]
+  });
 
-  // 預設的排序方法
-  const defaultSort = (a: any, b: any, key: string,) => {
-    const valA = a[key];
-    const valB = b[key];
-  
-    if (typeof valA === 'number' && typeof valB === 'number') {
-      return valA - valB;
-    }
-  
-    if (typeof valA === 'string' && typeof valB === 'string') {
-      return valA.localeCompare(valB);
-    }
-  
-    //其他類型轉換為字串後進行比較
-    return String(valA).localeCompare(String(valB));
+  const { data: sortedData, onSort, sortConfig } = useSort(data, tableState.sorter);
+
+  const handleTableChange = (newTableState: TableState) => {
+    setTableData(newTableState.currentData || []);
+    setTableState(newTableState);
+    onChange?.(newTableState);
   };
 
-  // 待處理：放到custom hook內
-  const handleSort = async (key: string, customSort?: (a: any, b: any) => number) => {
-    let direction: SortOrder = SortOrderEnum.ASCEND;
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === SortOrderEnum.ASCEND) {
-      direction = SortOrderEnum.DESCEND;
-    }
-
-    setSortConfig({ key, direction });
-
-    // 如果沒有 fetchData則使用前端的排序
-    if (!fetchData) {
-      const sortedData = [...tableData].sort((a, b) =>{
-        const sortValue = customSort ? customSort(a, b) : defaultSort(a, b, key);
-        return direction === SortOrderEnum.ASCEND ? sortValue : -sortValue;
-      });
-
-      setTableData(sortedData);
-      return;
-   }
-
-    // 如果有 fetchData則使用後端的排序
-    try {
-      const sortedData = await fetchData(key, direction);
-      setTableData(sortedData);
-    } catch (error) {
-      console.error('Error fetching sorted data:', error);
-    }
+  const handleSort = (field: string, customSort?: ((a: any, b: any) => number) | boolean) => {
+    const { data, sortConfig } = onSort(field, customSort);
+    // 更新表格狀態
+    handleTableChange({
+      sorter: sortConfig,
+      currentData: data
+    });
   };
 
-  // Use effect to set initial data
   useEffect(() => {
-    setTableData(data);
+    setTableData(sortedData || []);
+  }, [sortedData]);
+
+  useEffect(() => {
+    setTableState(prevState => ({
+      ...prevState,
+      sorter: sortConfig
+    }));
+  }, [sortConfig]);
+
+  useEffect(() => {
+    setTableData(data || []);
   }, [data]);
 
   return (
@@ -66,11 +52,11 @@ const Table: React.FC<TableProps> = ({ columns, fetchData, data }) => {
         <tr>
           {columns.map((column) => (
             <th
-              key={column.key}
-              onClick={() => column.sortable && handleSort(column.key,column.customSort)}
+              key={column.field}
+              onClick={() => column.sortable && handleSort(column.field,column.customSort)}
               style={{ position: column.fixed ? 'sticky' : 'static', [column.fixed || '']: 0 }}
             >
-              {column.title} {sortConfig?.key === column.key ? (sortConfig.direction === SortOrderEnum.ASCEND ? '↑' : '↓') : ''}
+              {column.title} {tableState.sorter?.field === column.field ? (tableState.sorter.sortOrder === SortOrderEnum.ASCEND ? '↑' : '↓') : ''}
             </th>
           ))}
         </tr>
@@ -79,8 +65,8 @@ const Table: React.FC<TableProps> = ({ columns, fetchData, data }) => {
         {tableData.map((row, rowIndex) => (
           <tr key={rowIndex}>
             {columns.map((column) => (
-              <td key={column.key}>
-                {column.render ? column.render(row[column.key], row) : row[column.key]}
+              <td key={column.field}>
+                {column.render ? column.render(row[column.field], row) : row[column.field]}
               </td>
             ))}
           </tr>
