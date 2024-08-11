@@ -2,14 +2,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+.yh-table-container{
+  @apply w-full h-[500px] overflow-auto;
+}
 .yh-table {
   @apply w-full;
-  .yh-table-head {
-    @apply bg-red-400;
-  }
-  
-  .yh-table-cell {
-    @apply px-4 py-2;
-  }
+}
+.yh-table-head {
+  @apply bg-red-400;
+}
+
+.yh-table-cell {
+  @apply px-4 py-2;
 }
