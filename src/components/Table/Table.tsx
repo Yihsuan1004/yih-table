@@ -4,6 +4,7 @@ import { TableProps, TableState } from './interface';
 import { SortOrderEnum } from './enum';
 import { RecordType } from "../../util/type";
 import useSort from './hooks/useSort';
+import './table.scss';
 
 
 
@@ -47,11 +48,12 @@ const Table: React.FC<TableProps> = ({ columns, onChange, data }) => {
   }, [data]);
 
   return (
-    <table>
+    <table className="yh-table">
       <thead>
         <tr>
           {columns.map((column) => (
             <th
+              className="yh-table-head yh-table-cell"
               key={column.field}
               onClick={() => column.sortable && handleSort(column.field,column.customSort)}
               style={{ position: column.fixed ? 'sticky' : 'static', [column.fixed || '']: 0 }}
@@ -65,7 +67,7 @@ const Table: React.FC<TableProps> = ({ columns, onChange, data }) => {
         {tableData.map((row, rowIndex) => (
           <tr key={rowIndex}>
             {columns.map((column) => (
-              <td key={column.field}>
+              <td key={column.field} className="yh-table-cell">
                 {column.render ? column.render(row[column.field], row) : row[column.field]}
               </td>
             ))}
