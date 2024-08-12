@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import "./table.scss";
 import { SortFunction, TableProps, TableState } from "./interface";
 import { SortOrderEnum } from "./enum";
 import { RecordType } from "../../util/type";
-import "./table.scss";
 import { useVirtualScroll } from "./hooks/useVirtualScroll";
-import useSort from "./hooks/useSort";
 import { TableRow, VirtualTableRow } from "./TableRow";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import useSort from "./hooks/useSort";
 
 const Table: React.FC<TableProps> = ({
   columns,
   onChange,
+  onScrollFetch,
   data,
   virtualScroll = false,
 }) => {
@@ -19,13 +20,17 @@ const Table: React.FC<TableProps> = ({
     sorter: { field: "", sortOrder: SortOrderEnum.DESCEND },
     currentData: [] as RecordType[],
   });
-
+  const [loading, setLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
   const { rowHeight, containerHeight, containerRef } = useVirtualScroll();
+  const hasNextPage = useRef(true);
+
+
 
   const virtualizer = useVirtualizer({
-    count: data.length,
+    count: hasNextPage.current ? tableData.length + 1 : tableData.length,
     getScrollElement: () => containerRef.current,
-    estimateSize: () => 34,
+    estimateSize: () => 50,
     overscan: 20,
   });
 
@@ -40,12 +45,39 @@ const Table: React.FC<TableProps> = ({
   const handleSort = (field: string, customSort?: SortFunction) => {
     const { data, sortConfig } = onSort(field, customSort);
     // 更新表格狀態
-    console.log("data", data);
     handleTableChange({
       sorter: sortConfig,
       currentData: data,
     });
   };
+
+  const handleScrollFetch = useCallback(async () => {
+    if (!virtualScroll || loading || !hasNextPage.current || !onScrollFetch) return;
+    setLoading(true);
+
+    const nextPageData = (await onScrollFetch(offset)).data; 
+    console.log("nextPageData", nextPageData);
+
+    if (nextPageData.length === 0) {
+      hasNextPage.current = false;
+    } else {
+      setTableData(prevData => [...prevData, ...nextPageData]);
+      setOffset(prevOffset => prevOffset + nextPageData.length);
+    }
+    setLoading(false);
+  }, [virtualScroll, loading, onScrollFetch, offset]);
+
+
+
+  useEffect(() => {
+    if (!onScrollFetch) return; 
+    const [lastItem] = [...virtualizer.getVirtualItems()].reverse();
+
+    if (lastItem && lastItem.index >= tableData.length - 1 && hasNextPage.current && !loading) {
+      handleScrollFetch();
+    }
+  }, [handleScrollFetch, loading,virtualizer, virtualizer.getVirtualItems(), tableData.length, onScrollFetch]);
+    
 
   useEffect(() => {
     setTableState((prevState) => ({
@@ -55,6 +87,7 @@ const Table: React.FC<TableProps> = ({
   }, [sortConfig]);
 
   useEffect(() => {
+    setOffset(data.length);
     setTableData(data || []);
   }, [data]);
 
@@ -90,16 +123,23 @@ const Table: React.FC<TableProps> = ({
           <tbody>
             {virtualScroll && rowHeight > 0 && containerHeight > 0
               ? virtualizer.getVirtualItems().map((virtualRow, index) => {
+                  const isLoaderRow = virtualRow.index >= tableData.length - 1
                   const row = tableData[virtualRow.index];
-                  return (
+                  if(isLoaderRow){
+                    if(hasNextPage.current){
+                      return <tr key={index}><td colSpan={columns.length}>載入中...</td></tr>
+                    }
+                    return <tr key={index}><td colSpan={columns.length}>無更多資料</td></tr>
+                  }
+                  return(
                     <VirtualTableRow
-                      key={row.id}
+                      key={row?.id || index}
                       index={index}
                       row={row}
                       virtualRow={virtualRow}
                       columns={columns}
                     />
-                  );
+                  )
                 })
               : tableData.map((row, rowIndex) => (
                   <TableRow
@@ -109,6 +149,7 @@ const Table: React.FC<TableProps> = ({
                     columns={columns}
                   />
                 ))}
+              
           </tbody>
         </table>
       </div>

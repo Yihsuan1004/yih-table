@@ -7,7 +7,7 @@ export const generateRandomNameData = (numRecords: number) => {
       const randomAge = Math.floor(Math.random() * 60) + 18; // Random age between 18 and 77
   
       data.push({
-        id: i,
+        id: '#'+ i,
         name: `${randomName} ${i}`, 
         age: randomAge,
       });

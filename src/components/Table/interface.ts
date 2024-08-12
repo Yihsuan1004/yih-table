@@ -4,6 +4,12 @@ import { VirtualItem } from '@tanstack/react-virtual';
 export type SortOrder = "descend" | "ascend";
 export type FixedDirection = "left" | "right";
 export type SortFunction = ((a: any, b: any, sortOrder: SortOrder) => number) | boolean;
+export type ScrollFetchDataFunction<T = any> = (offset: number, limit?: number) => Promise<ScrollFetchDataResult<T>>;
+export type ScrollFetchDataResult<T> = {
+  data: T[];
+  nextOffset: number;
+  hasMore: boolean;
+};
 
 // 表格的列欄位
 export interface TableRow extends RecordType {}
@@ -34,13 +40,25 @@ export interface TableProps {
   data: RecordType[]; 
   columns: TableColumn[]; 
   virtualScroll?: boolean;
-  onChange?: (state: TableState) => void; 
+  onChange?: (state: TableState) => void;
+  onScrollFetch?: ScrollFetchDataFunction;
 }
 
 
 export interface TableState {
   sorter: SortConfig;
   currentData?: RecordType[];
+}
+
+
+export interface TableState {
+  sorter: SortConfig;
+  currentData?: RecordType[];
+}
+
+
+export interface ScrollState {
+  offset: number;
 }
 
 

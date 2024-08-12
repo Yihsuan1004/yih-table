@@ -20,9 +20,7 @@ export const useVirtualScroll = () => {
     };
 
     calculateHeight();
-    console.log(containerHeight);
-    console.log(rowHeight);
-
+    
     window.addEventListener('resize', calculateHeight);
 
     return () => {

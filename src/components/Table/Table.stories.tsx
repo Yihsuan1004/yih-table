@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { TableColumn, SortOrder, TableProps, TableState } from './interface';
+import { TableColumn, SortOrder, TableProps, TableState, ScrollFetchDataResult } from './interface';
 import Table from './Table';
 import { SortOrderEnum } from './enum';
 import { generateRandomNameData } from '../../util/functions';
@@ -14,6 +14,7 @@ const sampleData = [
 
 
 const virtualSampleData = generateRandomNameData(1000);
+const virtualSampleData2 = generateRandomNameData(50);
 
 // Column configuration
 const columns: TableColumn[] = [
@@ -122,5 +123,41 @@ export const VirtualScroll: Story = {
     data: virtualSampleData,
     columns: virtualScrollColumns, 
     virtualScroll: true,
+  },
+};
+
+
+const handleScrollFetch = async (offset: number, limit: number | undefined) : Promise<ScrollFetchDataResult<any>> => {
+  console.log(`Fetching more data from offset and limit: ${offset} ${limit}`);
+
+  const newData = [
+    { id: 'N'+ offset + 3, name: `New Data ${offset + 3}`, age: 31 },
+    { id: 'N'+ offset + 4, name: `New Data ${offset + 4}`, age: 32 },
+    { id: 'N'+ offset + 5, name: `New Data ${offset + 5}`, age: 33 },
+    { id: 'N'+ offset + 6, name: `New Data ${offset + 6}`, age: 34 },
+
+  ];
+  
+  const nextOffset = offset + newData.length;
+  const hasMore = nextOffset < 100; //假設為多只有100筆資料
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+       resolve(
+        { 
+          data: newData,
+          nextOffset,
+          hasMore,
+        });
+    }, 1000);
+  });
+};
+
+export const InffinityScroll: Story = {
+  args: {
+    data: virtualSampleData2,
+    columns: virtualScrollColumns, 
+    virtualScroll: true,
+    onScrollFetch: handleScrollFetch
   },
 };
