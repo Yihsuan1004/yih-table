@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { TableColumn, SortOrder, TableProps, TableState, ScrollFetchDataResult } from './interface';
 import Table from './Table';
 import { SortOrderEnum } from './enum';
-import { generateRandomNameData } from '../../util/functions';
+import { generateEcommerceData, generateRandomNameData } from '../../util/functions';
 
 // Sample data
 const sampleData = [
@@ -32,14 +32,14 @@ const columns: TableColumn[] = [
 ];
 
 const virtualScrollColumns: TableColumn[] = [
-  { field: 'id', title: 'ID'},
-  { field: 'name', title: 'Name'},
-  { field: 'age', title: 'Age' },
+  { field: 'id', title: 'ID', fixed: 'left'},
+  { field: 'name', title: 'Name', fixed: 'left'},
+  { field: 'age', title: 'Age' , fixed: 'left'},
 ];
 
 // Column configuration
 const backendColumns: TableColumn[] = [
-  { field: 'id', title: 'ID', sortable: true, fixed: 'left', customSort: true },
+  { field: 'id', title: 'ID', sortable: true, customSort: true },
   { field: 'name', title: 'Name', sortable: true, customSort: true },
   { field: 'age', title: 'Age', sortable: true, customSort: true },
 
@@ -61,18 +61,55 @@ const sortByNameLength =(a: any, b: any, sortOrder: SortOrder): number => {
 }
 
 const customColumns: TableColumn[] = [
-  { field: 'id', title: 'ID', sortable: true, fixed: 'left',},
+  { field: 'id', title: 'ID', sortable: true,},
   { field: 'name', title: 'Name', sortable: true, customSort: sortByNameLength },
   { field: 'age', title: 'Age', sortable: true},
   {
     field: 'action',
     title: 'Action',
-    fixed: 'right',
     render: (data: any, row: any) => (
       <button onClick={() => alert(`You clicked ${data} for ${row.name}`)}>{data}</button>
     ),
   },
 ];
+
+
+const ecommerceColumns: TableColumn[] = [
+  { field: 'orderId', title: '訂單編號', width: 120,fixed: 'left' },
+  { field: 'orderDate', title: '下單日期', width: 110,fixed: 'left'  },
+  { field: 'customerName', title: '客戶姓名', width: 150 },
+  { field: 'totalAmount', title: '訂單金額', width: 100 },
+  { field: 'status', title: '訂單狀態', width: 100 },
+  { field: 'paymentMethod', title: '付款方式', width: 120 },
+  { field: 'shippingMethod', title: '配送方式', width: 120 },
+  { field: 'trackingNumber', title: '追蹤號碼', width: 130 },
+  { field: 'productName', title: '商品名稱', width: 200 },
+  { field: 'sku', title: 'SKU', width: 100 },
+  { field: 'quantity', title: '數量', width: 80 },
+  { field: 'unitPrice', title: '單價', width: 90 },
+  { field: 'discount', title: '折扣', width: 80 },
+  { field: 'tax', title: '稅額', width: 80 },
+  { field: 'shippingAddress', title: '收貨地址', width: 250 },
+  { field: 'phoneNumber', title: '聯絡電話', width: 120 },
+  { field: 'email', title: '電子郵件', width: 180 },
+  { field: 'returnStatus', title: '退貨狀態', width: 100 },
+  { field: 'refundAmount', title: '退款金額', width: 100 },
+  { field: 'stockLevel', title: '庫存水平', width: 100 },
+  { field: 'category', title: '商品類別', width: 120 },
+  { field: 'supplier', title: '供應商', width: 150 },
+  { field: 'lastUpdated', title: '最後更新', width: 110 },
+  { field: 'rating', title: '商品評分', width: 90 },
+  { field: 'reviewCount', title: '評論數', width: 90 },
+  { field: 'promotionCode', title: '促銷代碼', width: 110 },
+  { field: 'profitMargin', title: '利潤率', width: 90 },
+  { field: 'salesChannel', title: '銷售渠道', width: 120 },
+  { field: 'warehouseLocation', title: '倉庫位置', width: 130,fixed: 'right' },
+  { field: 'customerType', title: '客戶類型', width: 100,fixed: 'right' }
+];
+
+const ecommerceData = generateEcommerceData(100);
+
+
 
 
 // Mock API function to simulate sorting
@@ -159,5 +196,15 @@ export const InffinityScroll: Story = {
     columns: virtualScrollColumns, 
     virtualScroll: true,
     onScrollFetch: handleScrollFetch
+  },
+};
+
+
+export const FixedColumns: Story = {
+  args: {
+    data: ecommerceData,
+    columns: ecommerceColumns, 
+    virtualScroll: true,
+    className: 'w-[800px]',
   },
 };

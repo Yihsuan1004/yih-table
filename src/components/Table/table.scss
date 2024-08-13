@@ -2,16 +2,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.yh-table-outer-container{
+  @apply overflow-hidden;
+}
+.yh-table-head-container{
+  @apply overflow-x-hidden whitespace-nowrap;
+}
+
 .yh-table-container{
-  @apply w-full h-[500px] overflow-auto;
+  @apply w-full h-[400px] overflow-y-auto;
 }
+
 .yh-table {
-  @apply w-full;
+  @apply w-full table-fixed;
 }
+
 .yh-table-head {
-  @apply bg-red-400;
+  @apply bg-red-400 top-0;
+  &-sticky{
+    @apply sticky top-0 z-[2];
+  }
 }
 
 .yh-table-cell {
   @apply px-4 py-2;
 }
+
