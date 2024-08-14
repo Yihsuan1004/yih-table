@@ -28,21 +28,30 @@ const Table: React.FC<TableProps> = ({
     currentData: [] as RecordType[],
   });
   const {rowHeight, containerHeight, containerRef } = useVirtualScroll();
-  const [scrollInfo, setScrollInfo] = useState<ScrollInfo>({ left: 0, right: 0 });
+  const [scrollInfo, setScrollInfo] = useState<ScrollInfo>({ left: 0, right: 0, top: 0, bottom: 0 });
   const [theadRef, tbodyRef] = useSyncedScroll<HTMLDivElement, HTMLDivElement>({externalRef1: undefined, externalRef2: containerRef});
   const virtualizerRef = useRef<Virtualizer<any, any> | null>(null);
 
-
+  /**
+   * 處理表格滾動事件
+   * 滾動的時候紀錄滾動的left和right
+   */
   const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
-    setScrollInfo({
-      left: target.scrollLeft,
-      right: target.scrollWidth - target.clientWidth - target.scrollLeft
+    setScrollInfo((prevInfo) => {
+      const newLeft = target.scrollLeft;
+      const newTop = target.scrollTop;
+      const newBottom = target.scrollHeight - target.clientHeight - newTop;
+      const newRight = target.scrollWidth - target.clientWidth - newLeft;
+      if (prevInfo.left !== newLeft || prevInfo.right !== newRight || prevInfo.top !== newTop || prevInfo.bottom !== newBottom) {
+        return { left: newLeft, right: newRight, top: newTop, bottom: newBottom };
+      }
+      return prevInfo;
     });
   }, []);
 
-  const throttledHandleScroll = useThrottle(handleScroll, 100); // 100ms 的節流
-
+  
+  const throttledHandleScroll = useThrottle(handleScroll, 100);
 
   const {
     setOffset,
@@ -74,6 +83,10 @@ const Table: React.FC<TableProps> = ({
     virtualizerRef.current = virtualizer;
   }, [virtualizer]);
 
+  /**
+   * 處理表格資料變動(排序、過濾、分頁)
+   * @param newTableState 
+   */
   const handleTableChange = (newTableState: TableState) => {
     setTableData(newTableState.currentData || []);
     setTableState(newTableState);

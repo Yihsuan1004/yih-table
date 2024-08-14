@@ -22,11 +22,12 @@ const useScrollFetch = ({
   const [offset, setOffset] = useState(0);
   const hasNextPage = useRef(true);
   const handleScrollFetch = useCallback(async () => {
+    console.log('handleScrollFetch',onScrollFetch);
     if (!virtualScroll || loading || !hasNextPage || !onScrollFetch) return;
     setLoading(true);
-
     try {
       const { data: nextPageData , hasMore } = await onScrollFetch(offset);
+
       if (nextPageData.length === 0 || !hasMore) {
         hasNextPage.current = false;
       } else {
