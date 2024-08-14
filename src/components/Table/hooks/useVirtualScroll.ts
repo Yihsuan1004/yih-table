@@ -1,11 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 
+
+/**
+ * 虛擬滾動
+ * @returns 
+ */
+
 export const useVirtualScroll = () => {
-  const [rowHeight, setRowHeight] = useState(0);
-  const [containerHeight, setContainerHeight] = useState(0);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [rowHeight, setRowHeight] = useState(0); // 行高
+  const [containerHeight, setContainerHeight] = useState(0); // 容器高度
+  const containerRef = useRef<HTMLDivElement | null>(null); // 容器ref
 
   useEffect(() => {
+    // 計算行高和容器高度
     const calculateHeight = () => {
      const container = containerRef.current;
       if (container) {          
@@ -21,6 +28,7 @@ export const useVirtualScroll = () => {
 
     calculateHeight();
     
+    // 監聽視窗大小變化
     window.addEventListener('resize', calculateHeight);
 
     return () => {

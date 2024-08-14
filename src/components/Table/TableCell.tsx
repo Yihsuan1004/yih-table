@@ -3,7 +3,7 @@ import { TableColumn } from './interface';
 import { SortOrderEnum } from './enum';
 
 
-interface Props {
+interface TableCellProps {
   column: TableColumn;
   colIndex: number;
   columns: TableColumn[];
@@ -15,9 +15,9 @@ interface Props {
   onClick?: () => void;
 }
 
-const TableCell: React.FC<Props> = ({ 
+const TableCell: React.FC<TableCellProps> = ({ 
     column, row, colIndex, columns, isFixedLeft, isFixedRight,isHeader,onClick,tableState}) => {
-    const cellRef = useRef<HTMLTableCellElement | HTMLTableHeaderCellElement>(null);
+    const cellRef = useRef<HTMLTableCellElement>(null);
     const [leftOffset, setLeftOffset] = useState(0);
   const [rightOffset, setRightOffset] = useState(0);
 

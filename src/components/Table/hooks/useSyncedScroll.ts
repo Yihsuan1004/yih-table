@@ -1,8 +1,18 @@
 import { useEffect, useRef, RefObject } from 'react';
 
+interface UseSyncedScrollProps<T, U> {
+  externalRef1?: RefObject<T> | undefined;
+  externalRef2?: RefObject<U> | undefined;
+}
+
+/**
+ * 同步兩個元素的滾動位置
+ * @param externalRef1 外部傳入的ref
+ * @param externalRef2 外部傳入的ref
+ * @returns 
+ */ 
 const useSyncedScroll = <T extends HTMLElement, U extends HTMLElement>(
-  externalRef1?: RefObject<T>, // 接受外部傳入的ref
-  externalRef2?: RefObject<U>  // 接受外部傳入的ref
+  { externalRef1, externalRef2 }: UseSyncedScrollProps<T, U>
 ) => {
   const internalRef1 = useRef<T>(null);
   const internalRef2 = useRef<U>(null);
@@ -11,8 +21,7 @@ const useSyncedScroll = <T extends HTMLElement, U extends HTMLElement>(
   const ref2 = externalRef2 || internalRef2; 
 
   useEffect(() => {
-    console.log('scroll',ref1, ref2);
-    
+
     const handleScroll = () => {
       if (ref1.current && ref2.current) {
         ref1.current.scrollLeft = ref2.current.scrollLeft;

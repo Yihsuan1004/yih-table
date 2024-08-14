@@ -1,6 +1,17 @@
 import React from "react";
 import TableCell from "./TableCell";
-import { TableRowProps } from "./interface";
+import { RecordType } from "../../util/type";
+import { VirtualItem } from "@tanstack/react-virtual";
+import { TableColumn } from "./interface";
+
+
+interface TableRowProps {
+  index: number;
+  className?: string;
+  row: RecordType;
+  virtualRow?: VirtualItem<Element>
+  columns: TableColumn[];
+}
 
 export const TableRow: React.FC<TableRowProps> = ({
   index,
