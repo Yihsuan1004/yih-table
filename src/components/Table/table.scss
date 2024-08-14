@@ -5,14 +5,21 @@
 
 
 .yh-table-outer-container{
-  @apply overflow-hidden;
+  @apply overflow-hidden border border-gray-light;
 }
 .yh-table-head-container{
-  @apply whitespace-nowrap overflow-x-hidden;
+  @apply whitespace-nowrap overflow-x-hidden border-b border-gray-light;
 }
 
 .yh-table-container{
-  @apply w-full h-[400px] overflow-y-auto;
+  @apply w-full overflow-y-auto;
+  height: calc(100% - 36px);
+  scrollbar-width: thin; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  &::-webkit-scrollbar{
+    width: 2px; /* For Chrome, Safari, and Opera */
+    height: 4px; /* For horizontal scrollbar */
+  }
 }
 
 .yh-table {
@@ -43,14 +50,13 @@
 }
 
 .yh-table-head {
-  @apply bg-primary top-0 border-b border-gray-200 text-left hover:bg-slate-100;
+  @apply bg-primary top-0  text-left hover:bg-slate-100;
   &-sticky{
     @apply sticky top-0 z-[2];
   }
-}
-
-.yh-table-loader{
-  @apply p-2 bg-white text-center text-gray-500;
+  &:last-child{
+    margin-right: 12px
+  }
 }
 
 .yh-table-head .sort-icon {
@@ -62,12 +68,7 @@
   @apply opacity-100 cursor-pointer;
 }
 
-.yh-table-container {
-  scrollbar-width: thin; /* For Firefox */
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-}
 
-.yh-table-container::-webkit-scrollbar {
-  width: 2px; /* For Chrome, Safari, and Opera */
-  height: 4px; /* For horizontal scrollbar */
+.yh-table-loader{
+  @apply p-2 bg-white text-center text-gray-500;
 }

@@ -8,6 +8,7 @@ interface TableBodyProps {
   rowHeight: number;
   containerHeight: number;
   virtualizer: Virtualizer<any, any>;
+  className?: string;
   tableData: any[];
   columns: TableProps["columns"];
   hasNextPage: React.MutableRefObject<boolean>;
@@ -23,6 +24,7 @@ const TableBody: React.FC<TableBodyProps> = ({
   containerHeight,
   virtualizer,
   tableData,
+  className,
   columns,
   hasNextPage,
   tbodyRef,
@@ -32,8 +34,9 @@ const TableBody: React.FC<TableBodyProps> = ({
 }) => {
   return (
     <div ref={tbodyRef} className="yh-table-container" onScroll={onScroll}>
+    {virtualScroll ? (
       <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
-        <table className="yh-table">
+        <table className={`yh-table ${className}`}>
           <tbody>
             {virtualScroll && rowHeight > 0 && containerHeight > 0 
               ? virtualizer.getVirtualItems().map((virtualRow, index) => {
@@ -44,14 +47,18 @@ const TableBody: React.FC<TableBodyProps> = ({
                         key={`loader-${index}`}
                         style={{
                           height: `${rowHeight}px`,
-                          transform: `translateY(${virtualRow!.start - index * virtualRow!.size }px)`,
+                          transform: `translateY(${virtualRow.start - index * virtualRow.size}px)`,
                         }}
                       >
                         <td
                           colSpan={columns.length}
                           className="yh-table-loader"
                         >
-                          {hasNextPage.current && hasOnScrollFetch? <div className="yh-css-loader mx-auto"></div> : "無更多資料"}
+                          {hasOnScrollFetch && hasNextPage.current ? (
+                            <div className="yh-css-loader mx-auto"></div>
+                          ) : hasOnScrollFetch ? (
+                            "無更多資料"
+                          ) : null}
                         </td>
                       </tr>
                     );
@@ -79,8 +86,23 @@ const TableBody: React.FC<TableBodyProps> = ({
           </tbody>
         </table>
       </div>
-    </div>
-  );
+    ) : (
+      <table className="yh-table">
+        <tbody>
+          {tableData.map((row, rowIndex) => (
+            <TableRow
+              key={rowIndex}
+              index={rowIndex}
+              row={row}
+              columns={columns}
+              scrollInfo={scrollInfo}
+            />
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+);
 };
 
 export default TableBody;

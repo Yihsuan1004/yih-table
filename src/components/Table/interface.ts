@@ -39,6 +39,8 @@ export interface TableProps {
   columns: TableColumn[]; 
   virtualScroll?: boolean; // 是否啟用虛擬滾動
   className?: string;
+  headClassName?: string;
+  bodyClassName?: string;
   onChange?: (state: TableState) => void;
   onScrollFetch?: ScrollFetchDataFunction; // 虛擬滾動時的資料載入函數
 }

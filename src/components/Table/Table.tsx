@@ -15,6 +15,8 @@ import TableBody from "./TableBody";
 const Table: React.FC<TableProps> = ({
   columns,
   className,
+  headClassName,
+  bodyClassName,
   onChange,
   onScrollFetch,
   data,
@@ -99,6 +101,7 @@ const Table: React.FC<TableProps> = ({
   return (
     <div className={`yh-table-outer-container ${className}`}>
       <TableHeader
+        className={headClassName}
         theadRef={theadRef}
         columns={columns}
         handleSort={handleSort}
@@ -106,6 +109,7 @@ const Table: React.FC<TableProps> = ({
         scrollInfo={scrollInfo}
       />
       <TableBody
+        className={bodyClassName}
         virtualScroll={virtualScroll}
         rowHeight={rowHeight}
         containerHeight={containerHeight}

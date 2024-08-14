@@ -6,6 +6,7 @@ interface TableHeaderProps {
   columns: TableProps["columns"];
   handleSort: (field: string, customSort?: SortFunction) => void;
   tableState: TableState;
+  className?: string;
   scrollInfo: {
     left: number;
     right: number;
@@ -18,10 +19,11 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   handleSort,
   tableState,
   scrollInfo,
+  className,
   theadRef,
 }) => (
   <div className="yh-table-head-container" ref={theadRef}>
-    <table className="yh-table">
+    <table className={`yh-table ${className}`}>
       <colgroup>
         {columns.map((column, colIndex) => (
           <col key={colIndex} style={{ width: column.width }} />
