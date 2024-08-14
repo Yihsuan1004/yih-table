@@ -2,7 +2,7 @@ import React from "react";
 import TableCell from "./TableCell";
 import { RecordType } from "../../util/type";
 import { VirtualItem } from "@tanstack/react-virtual";
-import { TableColumn } from "./interface";
+import { ScrollInfo, TableColumn } from "./interface";
 
 
 interface TableRowProps {
@@ -11,6 +11,7 @@ interface TableRowProps {
   row: RecordType;
   virtualRow?: VirtualItem<Element>
   columns: TableColumn[];
+  scrollInfo: ScrollInfo;
 }
 
 export const TableRow: React.FC<TableRowProps> = ({
@@ -18,6 +19,7 @@ export const TableRow: React.FC<TableRowProps> = ({
   className,
   row,
   columns,
+  scrollInfo,
 }) => {
   return (
     <tr className={className} key={index}>
@@ -34,6 +36,7 @@ export const TableRow: React.FC<TableRowProps> = ({
             columns={columns}
             isFixedLeft={isFixedLeft}
             isFixedRight={isFixedRight}
+            scrollInfo={scrollInfo}
           />
         );
       })}
@@ -47,6 +50,7 @@ export const VirtualTableRow: React.FC<TableRowProps> = ({
   className,
   row,
   columns,
+  scrollInfo,
 }) => {
   return (
     <tr
@@ -70,6 +74,7 @@ export const VirtualTableRow: React.FC<TableRowProps> = ({
             columns={columns}
             isFixedLeft={isFixedLeft}
             isFixedRight={isFixedRight}
+            scrollInfo={scrollInfo}
           />
         );
       })}

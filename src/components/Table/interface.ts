@@ -14,6 +14,7 @@ export type ScrollFetchDataResult<T> = {
   nextOffset: number; // 下一個偏移量
   hasMore: boolean; // 是否還有更多資料
 };
+export type ScrollInfo = { left: number; right: number };
 
 // 表格的列
 export interface TableRow extends RecordType {}

@@ -1,5 +1,5 @@
-import React from "react";
-import { TableProps } from "./interface";
+import React, { useMemo } from "react";
+import { ScrollInfo, TableProps } from "./interface";
 import { Virtualizer } from "@tanstack/react-virtual";
 import { TableRow, VirtualTableRow } from "./TableRow";
 
@@ -12,6 +12,8 @@ interface TableBodyProps {
   columns: TableProps['columns'];
   hasNextPage: React.MutableRefObject<boolean>;
   tbodyRef: React.RefObject<HTMLDivElement>;
+  scrollInfo: ScrollInfo;
+  onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
 }
 
 const TableBody: React.FC<TableBodyProps> = ({
@@ -22,10 +24,13 @@ const TableBody: React.FC<TableBodyProps> = ({
   tableData,
   columns,
   hasNextPage,
-  tbodyRef
-}) => (
-  <div ref={tbodyRef}  className="yh-table-container">
-    <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
+  tbodyRef,
+  scrollInfo,
+  onScroll,
+}) => {
+  return (
+    <div ref={tbodyRef}  className="yh-table-container" onScroll={onScroll}>
+      <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
       <table className="yh-table">
         <tbody>
           {virtualScroll && rowHeight > 0 && containerHeight > 0
@@ -33,10 +38,12 @@ const TableBody: React.FC<TableBodyProps> = ({
                 const isLoaderRow = virtualRow.index >= tableData.length - 1;
                 const row = tableData[virtualRow.index];
                 if (isLoaderRow) {
-                  return hasNextPage.current ? (
-                    <tr key={index}><td colSpan={columns.length}>載入中...</td></tr>
-                  ) : (
-                    <tr key={index}><td colSpan={columns.length}>無更多資料</td></tr>
+                  return (
+                    <tr key={`loader-${index}`} style={{height: `${rowHeight}px`}}>
+                      <td colSpan={columns.length} className="yh-table-loader">
+                        {hasNextPage.current ? '載入中...' : '無更多資料'}
+                      </td>
+                    </tr>
                   );
                 }
                 return (
@@ -46,6 +53,7 @@ const TableBody: React.FC<TableBodyProps> = ({
                     row={row}
                     virtualRow={virtualRow}
                     columns={columns}
+                    scrollInfo={scrollInfo}
                   />
                 );
               })
@@ -55,12 +63,15 @@ const TableBody: React.FC<TableBodyProps> = ({
                   index={rowIndex}
                   row={row}
                   columns={columns}
+                  scrollInfo={scrollInfo}
                 />
               ))}
         </tbody>
       </table>
+      
     </div>
-  </div>
-);
+    </div>
+  );
+};
 
 export default TableBody;

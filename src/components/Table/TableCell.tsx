@@ -1,7 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { TableColumn } from './interface';
-import { SortOrderEnum } from './enum';
-
+import React, { useRef, useEffect, useState } from "react";
+import { TableColumn } from "./interface";
+import { SortOrderEnum } from "./enum";
 
 interface TableCellProps {
   column: TableColumn;
@@ -12,13 +11,24 @@ interface TableCellProps {
   row?: any;
   isHeader?: boolean; // 判斷是不是表頭
   tableState?: any;
+  scrollInfo?: { left: number; right: number };
   onClick?: () => void;
 }
 
-const TableCell: React.FC<TableCellProps> = ({ 
-    column, row, colIndex, columns, isFixedLeft, isFixedRight,isHeader,onClick,tableState}) => {
-    const cellRef = useRef<HTMLTableCellElement>(null);
-    const [leftOffset, setLeftOffset] = useState(0);
+const TableCell: React.FC<TableCellProps> = ({
+  column,
+  row,
+  colIndex,
+  columns,
+  isFixedLeft,
+  isFixedRight,
+  isHeader,
+  onClick,
+  tableState,
+  scrollInfo,
+}) => {
+  const cellRef = useRef<HTMLTableCellElement>(null);
+  const [leftOffset, setLeftOffset] = useState(0);
   const [rightOffset, setRightOffset] = useState(0);
 
   useEffect(() => {
@@ -27,7 +37,9 @@ const TableCell: React.FC<TableCellProps> = ({
 
       if (isFixedLeft) {
         for (let i = 0; i < colIndex; i++) {
-          const element = document.querySelector<HTMLTableCellElement>(`.col-${i}`);
+          const element = document.querySelector<HTMLTableCellElement>(
+            `.col-${i}`
+          );
           if (element) {
             offset += element.offsetWidth;
           }
@@ -38,7 +50,9 @@ const TableCell: React.FC<TableCellProps> = ({
       if (isFixedRight) {
         offset = 0;
         for (let i = columns.length - 1; i > colIndex; i--) {
-          const element = document.querySelector<HTMLTableCellElement>(`.col-${i}`);
+          const element = document.querySelector<HTMLTableCellElement>(
+            `.col-${i}`
+          );
           if (element) {
             offset += element.offsetWidth;
           }
@@ -48,8 +62,18 @@ const TableCell: React.FC<TableCellProps> = ({
     }
   }, [colIndex, columns, isFixedLeft, isFixedRight]);
 
-
-  const CellComponent = isHeader ? 'th' : 'td'; // 決定使用 th 或 td
+  const CellComponent = isHeader ? "th" : "td"; // 決定使用 th 或 td
+  // 判斷是否為左側固定列的最後一列
+  const isLastFixedLeft =
+    isFixedLeft &&
+    colIndex === columns.filter((col) => col.fixed === "left").length - 1;
+  // 判斷是否為右側固定列的第一列
+  const isFirstFixedRight =
+    isFixedRight &&
+    colIndex ===
+      columns.length - columns.filter((col) => col.fixed === "right").length;
+  const showLeftShadow = (isLastFixedLeft && scrollInfo?.left) || 0 > 0;
+  const showRightShadow = (isFirstFixedRight && scrollInfo?.right) || 0 > 0;
 
   return (
     <CellComponent
@@ -62,16 +86,27 @@ const TableCell: React.FC<TableCellProps> = ({
       }}
       className={`
         yh-table-cell
-        ${isFixedLeft ? 'sticky' : ''} 
-        ${isFixedRight ? 'sticky' : ''} 
-        ${isFixedLeft || isFixedRight ? 'z-10 bg-white' : ''}
+        ${isHeader ? "yh-table-head" : ""}
+        ${isFixedLeft ? "sticky" : ""} 
+        ${isFixedRight ? "sticky" : ""} 
+        ${isFixedLeft || isFixedRight ? "z-10" : ""}
+        ${isLastFixedLeft ? "fixed-left-last" : ""}
+        ${isFirstFixedRight ? "fixed-right-first" : ""}
+        ${(showLeftShadow || showRightShadow) && scrollInfo ? "show-shadow" : ""}
         col-${colIndex}
       `}
       onClick={onClick} // 處理表頭點擊事件
     >
       {isHeader
-        ? column.title + (tableState.sorter?.field === column.field ? (tableState.sorter.sortOrder === SortOrderEnum.ASCEND ? "↑" : "↓") : "")
-        : column.render ? column.render(row[column.field], row) : row[column.field]}
+        ? column.title +
+          (tableState.sorter?.field === column.field
+            ? tableState.sorter.sortOrder === SortOrderEnum.ASCEND
+              ? "↑"
+              : "↓"
+            : "")
+        : column.render
+          ? column.render(row[column.field], row)
+          : row[column.field]}
     </CellComponent>
   );
 };

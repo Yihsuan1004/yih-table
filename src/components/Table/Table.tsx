@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./table.scss";
-import { TableProps, TableState } from "./interface";
+import { ScrollInfo, TableProps, TableState } from "./interface";
 import { SortOrderEnum } from "./enum";
 import { RecordType } from "../../util/type";
 import { useVirtualScroll } from "./hooks/useVirtualScroll";
@@ -27,8 +27,18 @@ const Table: React.FC<TableProps> = ({
     currentData: [] as RecordType[],
   });
   const { rowHeight, containerHeight, containerRef } = useVirtualScroll();
+  const [scrollInfo, setScrollInfo] = useState<ScrollInfo>({ left: 0, right: 0 });
   const [theadRef, tbodyRef] = useSyncedScroll<HTMLDivElement, HTMLDivElement>({externalRef1: undefined, externalRef2: containerRef});
   const virtualizerRef = useRef<Virtualizer<any, any> | null>(null);
+
+
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    setScrollInfo({
+      left: target.scrollLeft,
+      right: target.scrollWidth - target.clientWidth - target.scrollLeft
+    });
+  }, []);
 
   const {
     setOffset,
@@ -47,7 +57,7 @@ const Table: React.FC<TableProps> = ({
     count: hasNextPage ? tableData.length + 1 : tableData.length,
     getScrollElement: () => containerRef.current,
     estimateSize: () => 50,
-    overscan: 20,
+    overscan: 10,
     onChange: (instance) => {
       const [lastItem] = [...instance.getVirtualItems()].reverse();
       if (lastItem && lastItem.index >= tableData.length - 1 && hasNextPage && !loading) {
@@ -86,13 +96,13 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <div className={`yh-table-outer-container ${className}`}>
-      <div ref={theadRef} className="yh-table-head-container">
-        <TableHeader
-          columns={columns}
-          handleSort={handleSort}
-          tableState={tableState}
-        />
-      </div>
+      <TableHeader
+        theadRef={theadRef}
+        columns={columns}
+        handleSort={handleSort}
+        tableState={tableState}
+        scrollInfo={scrollInfo}
+      />
       <TableBody
         virtualScroll={virtualScroll}
         rowHeight={rowHeight}
@@ -102,6 +112,8 @@ const Table: React.FC<TableProps> = ({
         columns={columns}
         hasNextPage={hasNextPage}
         tbodyRef={tbodyRef}
+        scrollInfo={scrollInfo}
+        onScroll={handleScroll}
       />
     </div>
   );

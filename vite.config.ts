@@ -7,7 +7,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "./src/index.scss";`, // 可選：引入全局 SCSS 文件
+        additionalData: `@import "./src/styles/index.scss";`, // 可選：引入全局 SCSS 文件
       },
     },
   },

@@ -24,7 +24,10 @@ const useSyncedScroll = <T extends HTMLElement, U extends HTMLElement>(
 
     const handleScroll = () => {
       if (ref1.current && ref2.current) {
+        console.log('handleScroll',ref1,ref2.current.scrollLeft);
         ref1.current.scrollLeft = ref2.current.scrollLeft;
+        console.log('handleScroll',ref1.current.scrollLeft);
+
       }
     };
 

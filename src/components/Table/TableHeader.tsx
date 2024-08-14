@@ -6,10 +6,15 @@ interface TableHeaderProps {
   columns: TableProps['columns'];
   handleSort: (field: string, customSort?: SortFunction) => void;
   tableState: TableState;
+  scrollInfo: {
+    left: number;
+    right: number;
+  };
+  theadRef: React.RefObject<HTMLDivElement>;
 }
 
-const TableHeader: React.FC<TableHeaderProps> = ({ columns, handleSort, tableState }) => (
-  <div className="yh-table-head-container">
+const TableHeader: React.FC<TableHeaderProps> = ({ columns, handleSort, tableState, scrollInfo,theadRef }) => (
+  <div className="yh-table-head-container" ref={theadRef}>
     <table className="yh-table">
       <thead>
         <tr>
@@ -24,6 +29,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({ columns, handleSort, tableSta
               isHeader={true}
               onClick={() => column.sortable && handleSort(column.field, column.customSort)}
               tableState={tableState}
+              scrollInfo={scrollInfo}
             />
           ))}
         </tr>
