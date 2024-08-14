@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { ScrollInfo, TableProps } from "./interface";
 import { Virtualizer } from "@tanstack/react-virtual";
 import { TableRow, VirtualTableRow } from "./TableRow";
@@ -32,11 +32,13 @@ const TableBody: React.FC<TableBodyProps> = ({
   onScroll,
   hasOnScrollFetch
 }) => {
+
+  const tableRef = useRef<HTMLTableElement>(null);
   return (
-    <div ref={tbodyRef} className="yh-table-container" onScroll={onScroll}>
+    <div ref={tbodyRef} className="yh-table-body-container" onScroll={onScroll}>
     {virtualScroll ? (
       <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
-        <table className={`yh-table ${className}`}>
+        <table className={`yh-table yh-table-virtual ${className || ''}`} ref={tableRef}>
           <tbody>
             {virtualScroll && rowHeight > 0 && containerHeight > 0 
               ? virtualizer.getVirtualItems().map((virtualRow, index) => {
@@ -56,15 +58,14 @@ const TableBody: React.FC<TableBodyProps> = ({
                         >
                           {hasOnScrollFetch && hasNextPage.current ? (
                             <div className="yh-css-loader mx-auto"></div>
-                          ) : hasOnScrollFetch ? (
-                            "無更多資料"
-                          ) : null}
+                          ) : "無更多資料"}
                         </td>
                       </tr>
                     );
                   }
                   return (
                     <VirtualTableRow
+                      tableRef={tableRef}
                       key={row?.id || index}
                       index={index}
                       row={row}
@@ -76,6 +77,7 @@ const TableBody: React.FC<TableBodyProps> = ({
                 })
               : tableData.map((row, rowIndex) => (
                   <TableRow
+                    tableRef={tableRef}
                     key={rowIndex}
                     index={rowIndex}
                     row={row}
@@ -87,10 +89,11 @@ const TableBody: React.FC<TableBodyProps> = ({
         </table>
       </div>
     ) : (
-      <table className="yh-table">
+      <table className="yh-table" ref={tableRef}>
         <tbody>
           {tableData.map((row, rowIndex) => (
             <TableRow
+              tableRef={tableRef}
               key={rowIndex}
               index={rowIndex}
               row={row}

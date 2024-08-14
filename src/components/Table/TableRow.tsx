@@ -7,15 +7,18 @@ import { ScrollInfo, TableColumn } from "./interface";
 
 interface TableRowProps {
   index: number;
-  className?: string;
+  tableRef: React.RefObject<HTMLTableElement>;
   row: RecordType;
-  virtualRow?: VirtualItem<Element>
   columns: TableColumn[];
+  className?: string;
+  virtualRow?: VirtualItem<Element>
   scrollInfo?: ScrollInfo;
 }
 
 export const TableRow: React.FC<TableRowProps> = ({
   index,
+  tableRef,
+  scrollInfo,
   className,
   row,
   columns,
@@ -28,6 +31,7 @@ export const TableRow: React.FC<TableRowProps> = ({
 
         return (
           <TableCell
+            tableRef={tableRef} 
             key={column.field}
             column={column}
             row={row}
@@ -35,6 +39,7 @@ export const TableRow: React.FC<TableRowProps> = ({
             columns={columns}
             isFixedLeft={isFixedLeft}
             isFixedRight={isFixedRight}
+            scrollInfo={scrollInfo}
           />
         );
       })}
@@ -43,6 +48,7 @@ export const TableRow: React.FC<TableRowProps> = ({
 };
 
 export const VirtualTableRow: React.FC<TableRowProps> = ({
+  tableRef,
   virtualRow,
   index,
   className,
@@ -65,6 +71,7 @@ export const VirtualTableRow: React.FC<TableRowProps> = ({
 
         return (
           <TableCell
+            tableRef={tableRef} 
             key={column.field}
             column={column}
             row={row}

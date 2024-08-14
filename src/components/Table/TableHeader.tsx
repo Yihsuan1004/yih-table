@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { SortFunction, TableProps, TableState } from "./interface";
 import TableCell from "./TableCell";
 
@@ -21,18 +21,24 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   scrollInfo,
   className,
   theadRef,
-}) => (
+}) => {
+
+  const tableRef = useRef<HTMLTableElement>(null);
+
+  return(
   <div className="yh-table-head-container" ref={theadRef}>
-    <table className={`yh-table ${className}`}>
+    <table ref={tableRef} className={`yh-table ${className || ''}`}>
       <colgroup>
         {columns.map((column, colIndex) => (
           <col key={colIndex} style={{ width: column.width }} />
         ))}
+        <col style={{ width: 10 }} />
       </colgroup>
       <thead>
         <tr>
           {columns.map((column, colIndex) => (
             <TableCell
+              tableRef={tableRef}
               key={column.field}
               column={column}
               colIndex={colIndex}
@@ -47,10 +53,12 @@ const TableHeader: React.FC<TableHeaderProps> = ({
               scrollInfo={scrollInfo}
             />
           ))}
+          <th className="yh-table-head-cell yh-table-head-cell-scroll"></th>
         </tr>
       </thead>
     </table>
   </div>
-);
+)
+};
 
 export default TableHeader;

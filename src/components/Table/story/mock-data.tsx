@@ -299,8 +299,8 @@ export const virtualSampleData2 = generateRandomNameData(50);
 /** 模擬滾動從後端取得資料 */
 export const handleScrollFetch = async (
   offset: number,
-  limit: number | undefined
 ): Promise<ScrollFetchDataResult<any>> => {
+  const limit = 50;
   console.log(`Fetching more data from offset and limit: ${offset} ${limit}`);
 
   const newData = [

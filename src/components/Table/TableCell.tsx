@@ -1,10 +1,12 @@
-import React, { useRef, useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { TableColumn } from "./interface";
 import { SortOrderEnum } from "./enum";
 import ArrowDropUpIcon from "../../assets/arrow_drop_up.svg";
 import ArrowDropDownIcon from "../../assets/arrow_drop_down.svg";
 
 interface TableCellProps {
+  tableRef: React.RefObject<HTMLTableElement>;
   column: TableColumn;
   colIndex: number;
   columns: TableColumn[];
@@ -18,6 +20,7 @@ interface TableCellProps {
 }
 
 const TableCell: React.FC<TableCellProps> = ({
+  tableRef,
   column,
   row,
   colIndex,
@@ -30,8 +33,7 @@ const TableCell: React.FC<TableCellProps> = ({
   scrollInfo,
 }) => {
   const cellRef = useRef<HTMLTableCellElement>(null);
-  const [leftOffset, setLeftOffset] = useState(0);
-  const [rightOffset, setRightOffset] = useState(0);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     if (isFixedLeft || isFixedRight) {
@@ -39,43 +41,46 @@ const TableCell: React.FC<TableCellProps> = ({
 
       if (isFixedLeft) {
         for (let i = 0; i < colIndex; i++) {
-          const element = document.querySelector<HTMLTableCellElement>(
+          const element = tableRef.current?.querySelector<HTMLTableCellElement>(
             `.col-${i}`
           );
           if (element) {
             offset += element.offsetWidth;
           }
         }
-        setLeftOffset(offset);
+        setOffset(offset);
       }
 
       if (isFixedRight) {
-        offset = 0;
+        offset = isHeader ? 10 : 0;
         for (let i = columns.length - 1; i > colIndex; i--) {
-          const element = document.querySelector<HTMLTableCellElement>(
+          const element = tableRef.current?.querySelector<HTMLTableCellElement>(
             `.col-${i}`
           );
           if (element) {
             offset += element.offsetWidth;
           }
         }
-        setRightOffset(offset);
+        setOffset(offset);
       }
     }
-  }, [colIndex, columns, isFixedLeft, isFixedRight]);
+  }, [colIndex,isFixedLeft, isFixedRight,isHeader]);
 
-  const CellComponent = isHeader ? "th" : "td"; // 決定使用 th 或 td
-  // 判斷是否為左側固定列的最後一列
-  const isLastFixedLeft =
-    isFixedLeft &&
-    colIndex === columns.filter((col) => col.fixed === "left").length - 1;
-  // 判斷是否為右側固定列的第一列
-  const isFirstFixedRight =
-    isFixedRight &&
-    colIndex ===
-      columns.length - columns.filter((col) => col.fixed === "right").length;
-  const showLeftShadow = (isLastFixedLeft && scrollInfo?.left) || 0 > 0;
-  const showRightShadow = (isFirstFixedRight && scrollInfo?.right) || 0 > 0;
+  const CellComponent = isHeader ? "th" : "td"; 
+  
+  const { isLastFixedLeft, isFirstFixedRight, showShadow } = useMemo(() => {
+    const isLastFixedLeft = isFixedLeft && colIndex === columns.filter((col) => col.fixed === "left").length - 1;
+    const isFirstFixedRight = isFixedRight && colIndex === columns.length - columns.filter((col) => col.fixed === "right").length;
+    
+    let showShadow = false;
+    if (isLastFixedLeft && scrollInfo?.left && scrollInfo.left > 1) {
+      showShadow = true;
+    } else if (isFirstFixedRight && scrollInfo?.right && scrollInfo.right > 1) {
+      showShadow = true;
+    }
+
+    return { isLastFixedLeft, isFirstFixedRight, showShadow };
+  }, [isFixedLeft, isFixedRight, colIndex, columns, scrollInfo]);
 
   return (
     <CellComponent
@@ -83,18 +88,18 @@ const TableCell: React.FC<TableCellProps> = ({
       key={column.field}
       style={{
         width: column.width,
-        left: isFixedLeft ? `${leftOffset}px` : undefined,
-        right: isFixedRight ? `${rightOffset}px` : undefined,
+        left: isFixedLeft ? `${offset}px` : undefined,
+        right: isFixedRight ? `${offset}px` : undefined,
       }}
       className={`
         yh-table-cell
-        ${isHeader ? "yh-table-head" : ""}
+        ${isHeader ? "yh-table-head-cell" : ""}
         ${isFixedLeft ? "sticky" : ""} 
         ${isFixedRight ? "sticky" : ""} 
         ${isFixedLeft || isFixedRight ? "z-10" : ""}
         ${isLastFixedLeft ? "fixed-left-last" : ""}
         ${isFirstFixedRight ? "fixed-right-first" : ""}
-        ${(showLeftShadow || showRightShadow) && scrollInfo ? "show-shadow" : ""}
+        ${showShadow ? "show-shadow" : ""}
         col-${colIndex}
       `}
       onClick={onClick} // 處理表頭點擊事件

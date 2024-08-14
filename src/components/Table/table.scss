@@ -8,10 +8,17 @@
   @apply overflow-hidden border border-gray-light;
 }
 .yh-table-head-container{
-  @apply whitespace-nowrap overflow-x-hidden border-b border-gray-light;
+  @apply whitespace-nowrap overflow-x-hidden;
+  tr:first-child th{
+    @apply border-r-0 border-t-0;
+    &:first-child{
+      @apply border-l-0;
+    }
+  }
 }
 
-.yh-table-container{
+
+.yh-table-body-container{
   @apply w-full overflow-y-auto;
   height: calc(100% - 36px);
   scrollbar-width: thin; /* For Firefox */
@@ -20,14 +27,26 @@
     width: 2px; /* For Chrome, Safari, and Opera */
     height: 4px; /* For horizontal scrollbar */
   }
+  tr:first-child td{
+    @apply border-t-0;
+  }
+  tr td:first-child{
+    @apply border-l-0;
+  }
 }
 
 .yh-table {
   @apply w-full table-fixed;
+  &-virtual{
+    @apply border-separate border-spacing-0;
+    .yh-table-cell{
+        @apply border-l-transparent border-t-transparent;
+    }
+  }
 }
 
 .yh-table-cell {
-  @apply px-4 py-2 bg-white break-all;
+  @apply px-4 py-2 bg-white break-all border border-gray-light;
   &.fixed-left-last {
     &::after {
       content: '';
@@ -49,22 +68,19 @@
   }
 }
 
-.yh-table-head {
+.yh-table-head-cell {
   @apply bg-primary top-0  text-left hover:bg-slate-100;
-  &-sticky{
-    @apply sticky top-0 z-[2];
-  }
-  &:last-child{
-    margin-right: 12px
+  &-scroll{
+    @apply sticky right-0 z-10 pointer-events-none border-b border-gray-light
   }
 }
 
-.yh-table-head .sort-icon {
+.yh-table-head-cell .sort-icon {
   @apply opacity-0 transition-opacity duration-200 ease-in-out;
 }
 
-.yh-table-head:hover .sort-icon,
-.yh-table-head .sort-icon.active {
+.yh-table-head-cell:hover .sort-icon,
+.yh-table-head-cell .sort-icon.active {
   @apply opacity-100 cursor-pointer;
 }
 
