@@ -3,13 +3,12 @@ import "./table.scss";
 import { ScrollInfo, TableProps, TableState } from "./interface";
 import { SortOrderEnum } from "./enum";
 import { RecordType } from "../../util/type";
-import { useVirtualScroll } from "./hooks/useVirtualScroll";
-import { TableRow, VirtualTableRow } from "./TableRow";
 import { useVirtualizer, Virtualizer } from "@tanstack/react-virtual";
+import { useThrottle } from "../../util/useThrottle";
 import useSort from "./hooks/useSort";
+import useVirtualScroll  from "./hooks/useVirtualScroll";
 import useSyncedScroll from "./hooks/useSyncedScroll";
-import TableCell from "./TableCell";
-import { useScrollFetch } from "./hooks/useScrollFetch";
+import useScrollFetch  from "./hooks/useScrollFetch";
 import TableHeader from "./TableHeader";
 import TableBody from "./TableBody";
 
@@ -40,6 +39,9 @@ const Table: React.FC<TableProps> = ({
     });
   }, []);
 
+  const throttledHandleScroll = useThrottle(handleScroll, 100); // 100ms 的節流
+
+
   const {
     setOffset,
     hasNextPage,
@@ -57,7 +59,7 @@ const Table: React.FC<TableProps> = ({
     count: hasNextPage ? tableData.length + 1 : tableData.length,
     getScrollElement: () => containerRef.current,
     estimateSize: () => 50,
-    overscan: 10,
+    overscan: 5,
     onChange: (instance) => {
       const [lastItem] = [...instance.getVirtualItems()].reverse();
       if (lastItem && lastItem.index >= tableData.length - 1 && hasNextPage && !loading) {
@@ -113,7 +115,7 @@ const Table: React.FC<TableProps> = ({
         hasNextPage={hasNextPage}
         tbodyRef={tbodyRef}
         scrollInfo={scrollInfo}
-        onScroll={handleScroll}
+        onScroll={throttledHandleScroll}
       />
     </div>
   );

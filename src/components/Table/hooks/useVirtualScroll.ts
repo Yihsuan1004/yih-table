@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
  * @returns 
  */
 
-export const useVirtualScroll = () => {
+const useVirtualScroll = () => {
   const [rowHeight, setRowHeight] = useState(0); // 行高
   const [containerHeight, setContainerHeight] = useState(0); // 容器高度
   const containerRef = useRef<HTMLDivElement | null>(null); // 容器ref
@@ -27,7 +27,7 @@ export const useVirtualScroll = () => {
     };
 
     calculateHeight();
-    
+
     // 監聽視窗大小變化
     window.addEventListener('resize', calculateHeight);
 
@@ -38,3 +38,5 @@ export const useVirtualScroll = () => {
 
   return { rowHeight, containerHeight, containerRef };
 };
+
+export default useVirtualScroll;

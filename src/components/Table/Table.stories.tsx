@@ -176,7 +176,7 @@ const handleScrollFetch = async (offset: number, limit: number | undefined) : Pr
   ];
   
   const nextOffset = offset + newData.length;
-  const hasMore = nextOffset < 100; //假設為多只有100筆資料
+  const hasMore = nextOffset < 60; //假設為多只有100筆資料
 
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -190,7 +190,7 @@ const handleScrollFetch = async (offset: number, limit: number | undefined) : Pr
   });
 };
 
-export const InffinityScroll: Story = {
+export const InfiniteScroll: Story = {
   args: {
     data: virtualSampleData2,
     columns: virtualScrollColumns, 

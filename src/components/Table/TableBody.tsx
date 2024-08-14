@@ -9,7 +9,7 @@ interface TableBodyProps {
   containerHeight: number;
   virtualizer: Virtualizer<any, any>;
   tableData: any[];
-  columns: TableProps['columns'];
+  columns: TableProps["columns"];
   hasNextPage: React.MutableRefObject<boolean>;
   tbodyRef: React.RefObject<HTMLDivElement>;
   scrollInfo: ScrollInfo;
@@ -29,47 +29,56 @@ const TableBody: React.FC<TableBodyProps> = ({
   onScroll,
 }) => {
   return (
-    <div ref={tbodyRef}  className="yh-table-container" onScroll={onScroll}>
+    <div ref={tbodyRef} className="yh-table-container" onScroll={onScroll}>
       <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
-      <table className="yh-table">
-        <tbody>
-          {virtualScroll && rowHeight > 0 && containerHeight > 0
-            ? virtualizer.getVirtualItems().map((virtualRow, index) => {
-                const isLoaderRow = virtualRow.index >= tableData.length - 1;
-                const row = tableData[virtualRow.index];
-                if (isLoaderRow) {
+        <table className="yh-table">
+          <tbody>
+            {virtualScroll && rowHeight > 0 && containerHeight > 0
+              ? virtualizer.getVirtualItems().map((virtualRow, index) => {
+                  console.log("virtualRow", virtualRow);
+                  console.log("tableData", tableData);
+                  const row = tableData[virtualRow.index];
+                  if (virtualRow.index >= tableData.length) {
+                    return (
+                      <tr
+                        key={`loader-${index}`}
+                        style={{
+                          height: `${rowHeight}px`,
+                          transform: `translateY(${virtualRow!.start - index * virtualRow!.size }px)`,
+                        }}
+                      >
+                        <td
+                          colSpan={columns.length}
+                          className="yh-table-loader"
+                        >
+                          {hasNextPage.current ? <div className="yh-css-loader mx-auto"></div> : "無更多資料"}
+                        </td>
+                      </tr>
+                    );
+                  }
                   return (
-                    <tr key={`loader-${index}`} style={{height: `${rowHeight}px`}}>
-                      <td colSpan={columns.length} className="yh-table-loader">
-                        {hasNextPage.current ? '載入中...' : '無更多資料'}
-                      </td>
-                    </tr>
+                    <VirtualTableRow
+                      key={row?.id || index}
+                      index={index}
+                      row={row}
+                      virtualRow={virtualRow}
+                      columns={columns}
+                      scrollInfo={scrollInfo}
+                    />
                   );
-                }
-                return (
-                  <VirtualTableRow
-                    key={row?.id || index}
-                    index={index}
+                })
+              : tableData.map((row, rowIndex) => (
+                  <TableRow
+                    key={rowIndex}
+                    index={rowIndex}
                     row={row}
-                    virtualRow={virtualRow}
                     columns={columns}
                     scrollInfo={scrollInfo}
                   />
-                );
-              })
-            : tableData.map((row, rowIndex) => (
-                <TableRow
-                  key={rowIndex}
-                  index={rowIndex}
-                  row={row}
-                  columns={columns}
-                  scrollInfo={scrollInfo}
-                />
-              ))}
-        </tbody>
-      </table>
-      
-    </div>
+                ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

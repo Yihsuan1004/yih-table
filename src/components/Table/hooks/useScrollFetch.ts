@@ -1,15 +1,17 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Virtualizer } from '@tanstack/react-virtual';
+import { ScrollFetchDataResult } from '../interface';
+
 
 interface UseScrollFetchProps {
   virtualScroll: boolean;
-  onScrollFetch?: (offset: number) => Promise<{ data: any[] }>;
   virtualizer: Virtualizer<any, any> | null;
   tableData: any[];
+  onScrollFetch?: (offset: number) => Promise<ScrollFetchDataResult<any>>;
   setTableData: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export const useScrollFetch = ({ 
+const useScrollFetch = ({ 
   virtualScroll, 
   onScrollFetch, 
   virtualizer, 
@@ -24,9 +26,9 @@ export const useScrollFetch = ({
     setLoading(true);
 
     try {
-      const { data: nextPageData } = await onScrollFetch(offset);
-      if (nextPageData.length === 0) {
-          hasNextPage.current = false
+      const { data: nextPageData , hasMore } = await onScrollFetch(offset);
+      if (nextPageData.length === 0 || !hasMore) {
+        hasNextPage.current = false;
       } else {
         setOffset((prevOffset) => prevOffset + nextPageData.length);
         return nextPageData;
@@ -69,3 +71,5 @@ export const useScrollFetch = ({
     handleScrollFetch
   };
 };
+
+export default useScrollFetch;
