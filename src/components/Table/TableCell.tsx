@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import { TableColumn } from "./interface";
 import { SortOrderEnum } from "./enum";
+import ArrowDropUpIcon from "../../assets/arrow_drop_up.svg";
+import ArrowDropDownIcon from "../../assets/arrow_drop_down.svg";
 
 interface TableCellProps {
   column: TableColumn;
@@ -97,16 +99,34 @@ const TableCell: React.FC<TableCellProps> = ({
       `}
       onClick={onClick} // 處理表頭點擊事件
     >
-      {isHeader
-        ? column.title +
-          (tableState.sorter?.field === column.field
-            ? tableState.sorter.sortOrder === SortOrderEnum.ASCEND
-              ? "↑"
-              : "↓"
-            : "")
-        : column.render
-          ? column.render(row[column.field], row)
-          : row[column.field]}
+      {isHeader ? (
+        <>
+          {column.title}
+          {column.sortable && (
+            <span
+              className={`sort-icon ${tableState.sorter?.field === column.field ? "active" : ""}`}
+            >
+              <img
+                src={
+                  tableState.sorter?.sortOrder === SortOrderEnum.ASCEND
+                    ? ArrowDropUpIcon
+                    : ArrowDropDownIcon
+                }
+                alt={
+                  tableState.sorter?.sortOrder === SortOrderEnum.ASCEND
+                    ? "升序"
+                    : "降序"
+                }
+                className="inline-block ml-1 w-4 h-4"
+              />
+            </span>
+          )}
+        </>
+      ) : column.render ? (
+        column.render(row[column.field], row)
+      ) : (
+        row[column.field]
+      )}
     </CellComponent>
   );
 };

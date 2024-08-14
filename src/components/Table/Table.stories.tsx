@@ -32,9 +32,9 @@ const columns: TableColumn[] = [
 ];
 
 const virtualScrollColumns: TableColumn[] = [
-  { field: 'id', title: 'ID', fixed: 'left'},
-  { field: 'name', title: 'Name', fixed: 'left'},
-  { field: 'age', title: 'Age' , fixed: 'left'},
+  { field: 'id', title: 'ID'},
+  { field: 'name', title: 'Name'},
+  { field: 'age', title: 'Age' },
 ];
 
 // Column configuration

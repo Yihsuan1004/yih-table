@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ScrollInfo, TableProps } from "./interface";
 import { Virtualizer } from "@tanstack/react-virtual";
 import { TableRow, VirtualTableRow } from "./TableRow";
@@ -14,6 +14,7 @@ interface TableBodyProps {
   tbodyRef: React.RefObject<HTMLDivElement>;
   scrollInfo: ScrollInfo;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
+  hasOnScrollFetch: boolean; // 是否啟用onScrollFetch
 }
 
 const TableBody: React.FC<TableBodyProps> = ({
@@ -27,16 +28,15 @@ const TableBody: React.FC<TableBodyProps> = ({
   tbodyRef,
   scrollInfo,
   onScroll,
+  hasOnScrollFetch
 }) => {
   return (
     <div ref={tbodyRef} className="yh-table-container" onScroll={onScroll}>
       <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
         <table className="yh-table">
           <tbody>
-            {virtualScroll && rowHeight > 0 && containerHeight > 0
+            {virtualScroll && rowHeight > 0 && containerHeight > 0 
               ? virtualizer.getVirtualItems().map((virtualRow, index) => {
-                  console.log("virtualRow", virtualRow);
-                  console.log("tableData", tableData);
                   const row = tableData[virtualRow.index];
                   if (virtualRow.index >= tableData.length) {
                     return (
@@ -51,7 +51,7 @@ const TableBody: React.FC<TableBodyProps> = ({
                           colSpan={columns.length}
                           className="yh-table-loader"
                         >
-                          {hasNextPage.current ? <div className="yh-css-loader mx-auto"></div> : "無更多資料"}
+                          {hasNextPage.current && hasOnScrollFetch? <div className="yh-css-loader mx-auto"></div> : "無更多資料"}
                         </td>
                       </tr>
                     );

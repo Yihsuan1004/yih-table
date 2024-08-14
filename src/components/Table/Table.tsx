@@ -25,7 +25,7 @@ const Table: React.FC<TableProps> = ({
     sorter: { field: "", sortOrder: SortOrderEnum.DESCEND },
     currentData: [] as RecordType[],
   });
-  const { rowHeight, containerHeight, containerRef } = useVirtualScroll();
+  const {rowHeight, containerHeight, containerRef } = useVirtualScroll();
   const [scrollInfo, setScrollInfo] = useState<ScrollInfo>({ left: 0, right: 0 });
   const [theadRef, tbodyRef] = useSyncedScroll<HTMLDivElement, HTMLDivElement>({externalRef1: undefined, externalRef2: containerRef});
   const virtualizerRef = useRef<Virtualizer<any, any> | null>(null);
@@ -116,6 +116,7 @@ const Table: React.FC<TableProps> = ({
         tbodyRef={tbodyRef}
         scrollInfo={scrollInfo}
         onScroll={throttledHandleScroll}
+        hasOnScrollFetch={!!onScrollFetch} 
       />
     </div>
   );

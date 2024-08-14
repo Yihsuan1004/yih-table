@@ -3,7 +3,7 @@ import { SortFunction, TableProps, TableState } from "./interface";
 import TableCell from "./TableCell";
 
 interface TableHeaderProps {
-  columns: TableProps['columns'];
+  columns: TableProps["columns"];
   handleSort: (field: string, customSort?: SortFunction) => void;
   tableState: TableState;
   scrollInfo: {
@@ -13,9 +13,20 @@ interface TableHeaderProps {
   theadRef: React.RefObject<HTMLDivElement>;
 }
 
-const TableHeader: React.FC<TableHeaderProps> = ({ columns, handleSort, tableState, scrollInfo,theadRef }) => (
+const TableHeader: React.FC<TableHeaderProps> = ({
+  columns,
+  handleSort,
+  tableState,
+  scrollInfo,
+  theadRef,
+}) => (
   <div className="yh-table-head-container" ref={theadRef}>
     <table className="yh-table">
+      <colgroup>
+        {columns.map((column, colIndex) => (
+          <col key={colIndex} style={{ width: column.width }} />
+        ))}
+      </colgroup>
       <thead>
         <tr>
           {columns.map((column, colIndex) => (
@@ -24,10 +35,12 @@ const TableHeader: React.FC<TableHeaderProps> = ({ columns, handleSort, tableSta
               column={column}
               colIndex={colIndex}
               columns={columns}
-              isFixedLeft={column.fixed === 'left'}
-              isFixedRight={column.fixed === 'right'}
+              isFixedLeft={column.fixed === "left"}
+              isFixedRight={column.fixed === "right"}
               isHeader={true}
-              onClick={() => column.sortable && handleSort(column.field, column.customSort)}
+              onClick={() =>
+                column.sortable && handleSort(column.field, column.customSort)
+              }
               tableState={tableState}
               scrollInfo={scrollInfo}
             />

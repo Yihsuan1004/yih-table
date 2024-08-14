@@ -43,7 +43,7 @@
 }
 
 .yh-table-head {
-  @apply bg-primary top-0 border-b border-gray-200 text-left;
+  @apply bg-primary top-0 border-b border-gray-200 text-left hover:bg-slate-100;
   &-sticky{
     @apply sticky top-0 z-[2];
   }
@@ -53,3 +53,21 @@
   @apply p-2 bg-white text-center text-gray-500;
 }
 
+.yh-table-head .sort-icon {
+  @apply opacity-0 transition-opacity duration-200 ease-in-out;
+}
+
+.yh-table-head:hover .sort-icon,
+.yh-table-head .sort-icon.active {
+  @apply opacity-100 cursor-pointer;
+}
+
+.yh-table-container {
+  scrollbar-width: thin; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.yh-table-container::-webkit-scrollbar {
+  width: 2px; /* For Chrome, Safari, and Opera */
+  height: 4px; /* For horizontal scrollbar */
+}

@@ -11,7 +11,7 @@ interface TableRowProps {
   row: RecordType;
   virtualRow?: VirtualItem<Element>
   columns: TableColumn[];
-  scrollInfo: ScrollInfo;
+  scrollInfo?: ScrollInfo;
 }
 
 export const TableRow: React.FC<TableRowProps> = ({
@@ -19,7 +19,6 @@ export const TableRow: React.FC<TableRowProps> = ({
   className,
   row,
   columns,
-  scrollInfo,
 }) => {
   return (
     <tr className={className} key={index}>
@@ -36,7 +35,6 @@ export const TableRow: React.FC<TableRowProps> = ({
             columns={columns}
             isFixedLeft={isFixedLeft}
             isFixedRight={isFixedRight}
-            scrollInfo={scrollInfo}
           />
         );
       })}
