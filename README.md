@@ -26,4 +26,5 @@
 - 執行 `npm run storybook:build` 來建置Storybook的productio。
 - 執行 `npm run build` 來建置元件庫production。
 
-
+## Demo網址
+https://yihsuan1004.github.io/yih-table/?path=/docs/components-table--docs
