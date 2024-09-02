@@ -16,11 +16,11 @@ export type ScrollFetchDataResult<T> = {
 };
 export type ScrollInfo = { left: number; right: number , top: number, bottom: number};
 
-// 表格的列
+/** 表格的列 */
 export interface TableRow extends RecordType {}
 
 
-// 表格的欄
+/** 表格的欄 */
 export interface TableColumn {
   field: string; // 欄位名稱
   title: string; // 欄位標題
@@ -33,7 +33,7 @@ export interface TableColumn {
   render?: (data: any, row: TableRow) => React.ReactNode; // 自定義渲染函數
 }
 
-// 表格的props
+/** 表格的props */
 export interface TableProps {
   data: RecordType[]; 
   columns: TableColumn[]; 
@@ -45,13 +45,13 @@ export interface TableProps {
   onScrollFetch?: ScrollFetchDataFunction; // 虛擬滾動時的資料載入函數
 }
 
-// 表格的state
+/** 表格的state */
 export interface TableState {
   sorter: SortConfig; //
   currentData?: RecordType[]; 
 }
 
-// 排序的設定
+/**  排序的設定 */
 export interface SortConfig {
   field: string; // 排序的欄位
   sortOrder: SortOrder; // 排序的方向

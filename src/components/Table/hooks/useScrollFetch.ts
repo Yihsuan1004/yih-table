@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Virtualizer } from '@tanstack/react-virtual';
 import { ScrollFetchDataResult } from '../interface';
+import { action } from '@storybook/addon-actions';
 
 
 interface UseScrollFetchProps {
@@ -22,7 +23,6 @@ const useScrollFetch = ({
   const [offset, setOffset] = useState(0);
   const hasNextPage = useRef(true);
   const handleScrollFetch = useCallback(async () => {
-    console.log('handleScrollFetch',onScrollFetch);
     if (!virtualScroll || loading || !hasNextPage || !onScrollFetch) return;
     setLoading(true);
     try {
@@ -35,6 +35,8 @@ const useScrollFetch = ({
         return nextPageData;
       }
     } finally {
+      const actionLogger = action('onScrollFetch');
+      actionLogger(); // 手動呼叫 action logger
       setLoading(false);
     }
   }, [virtualScroll, loading, onScrollFetch, offset]);

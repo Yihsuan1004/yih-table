@@ -208,7 +208,6 @@ export const backendColumns: TableColumn[] = [
   {
     field: "action",
     title: "操作",
-    fixed: "right",
     render: renderAction
   },
 ];
@@ -238,7 +237,6 @@ export const customColumns: TableColumn[] = [
   {
     field: "action",
     title: "操作",
-    fixed: "right",
     render: renderAction
   },
 ];

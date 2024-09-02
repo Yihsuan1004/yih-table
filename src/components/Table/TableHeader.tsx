@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { SortFunction, TableProps, TableState } from "./interface";
 import TableCell from "./TableCell";
 
-interface TableHeaderProps {
+export interface TableHeaderProps {
   columns: TableProps["columns"];
   handleSort: (field: string, customSort?: SortFunction) => void;
   tableState: TableState;
@@ -27,12 +27,11 @@ const TableHeader: React.FC<TableHeaderProps> = ({
 
   return(
   <div className="yh-table-head-container" ref={theadRef}>
-    <table ref={tableRef} className={`yh-table ${className || ''}`}>
+    <table ref={tableRef} className={`yh-table yh-table-virtual ${className || ''}`}>
       <colgroup>
         {columns.map((column, colIndex) => (
           <col key={colIndex} style={{ width: column.width }} />
         ))}
-        <col style={{ width: 10 }} />
       </colgroup>
       <thead>
         <tr>
@@ -53,7 +52,6 @@ const TableHeader: React.FC<TableHeaderProps> = ({
               scrollInfo={scrollInfo}
             />
           ))}
-          <th className="yh-table-head-cell yh-table-head-cell-scroll"></th>
         </tr>
       </thead>
     </table>

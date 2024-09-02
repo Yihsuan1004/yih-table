@@ -26,10 +26,11 @@ const useSort = ({ data, initialSortConfig, onTableChange }: UseSortProps) => {
 
   const [sortConfig, setSortConfig] = useState<SortConfig>(initialSortConfig);
 
-  // 預設的排序方法
+  // 預設的排序方法，若有傳入customSort則使用customSort的規則
   const defaultSortData = useMemo(() => {
     return (data: RecordType[], field: string, sortOrder: SortOrder, customSort?: SortFunction) => {
       return [...data].sort((a, b) => {
+        //啟用customSort
         if (customSort && typeof customSort === 'function') {
           return customSort(a, b, sortOrder);
         }
@@ -62,6 +63,7 @@ const useSort = ({ data, initialSortConfig, onTableChange }: UseSortProps) => {
     const updatedSortConfig = { field, sortOrder };
     setSortConfig(updatedSortConfig);
   
+    //表示啟用後端sort，只回傳ascend或descend
     if (customSort === true) {
       return { data, sortConfig: updatedSortConfig };
     }

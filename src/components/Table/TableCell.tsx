@@ -52,7 +52,6 @@ const TableCell: React.FC<TableCellProps> = ({
       }
 
       if (isFixedRight) {
-        offset = isHeader ? 10 : 0;
         for (let i = columns.length - 1; i > colIndex; i--) {
           const element = tableRef.current?.querySelector<HTMLTableCellElement>(
             `.col-${i}`

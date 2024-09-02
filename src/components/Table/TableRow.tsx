@@ -2,7 +2,7 @@ import React from "react";
 import TableCell from "./TableCell";
 import { RecordType } from "../../util/type";
 import { VirtualItem } from "@tanstack/react-virtual";
-import { ScrollInfo, TableColumn } from "./interface";
+import { ScrollInfo, TableColumn, TableProps } from "./interface";
 
 
 interface TableRowProps {
@@ -13,6 +13,15 @@ interface TableRowProps {
   className?: string;
   virtualRow?: VirtualItem<Element>
   scrollInfo?: ScrollInfo;
+}
+
+interface LoaderRowProps {
+  rowHeight: number;
+  columns: TableColumn[];
+  hasOnScrollFetch: boolean;
+  hasNextPage: React.MutableRefObject<boolean>;
+  virtualRow: any;
+  index: number;
 }
 
 export const TableRow: React.FC<TableRowProps> = ({
@@ -86,3 +95,31 @@ export const VirtualTableRow: React.FC<TableRowProps> = ({
     </tr>
   );
 };
+
+export const LoaderRow: React.FC<LoaderRowProps> = (
+  ({
+    rowHeight,
+    columns,
+    hasOnScrollFetch,
+    hasNextPage,
+    virtualRow,
+    index,
+  }) => {
+    return(
+    <tr
+      style={{
+        height: `${rowHeight}px`,
+        transform: `translateY(${virtualRow!.start - index * virtualRow!.size}px)`,
+      }}
+    >
+      <td colSpan={columns.length} className="yh-table-loader">
+        {hasOnScrollFetch && hasNextPage.current ? (
+          <div className="yh-css-loader mx-auto"></div>
+        ) : (
+          "無更多資料"
+        )}
+      </td>
+    </tr>
+  )
+  }
+);

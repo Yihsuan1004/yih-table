@@ -1,30 +1,21 @@
 import React, { useRef, memo } from "react";
-import { ScrollInfo, TableProps } from "./interface";
+import { ScrollInfo, TableColumn, TableProps } from "./interface";
 import { Virtualizer } from "@tanstack/react-virtual";
-import { TableRow, VirtualTableRow } from "./TableRow";
+import { LoaderRow, TableRow, VirtualTableRow } from "./TableRow";
 
-interface TableBodyProps {
+export interface TableBodyProps {
   virtualScroll: boolean;
   rowHeight: number;
   containerHeight: number;
   virtualizer: Virtualizer<any, any>;
   className?: string;
   tableData: any[];
-  columns: TableProps["columns"];
+  columns: TableColumn[];
   hasNextPage: React.MutableRefObject<boolean>;
   tbodyRef: React.RefObject<HTMLDivElement>;
   scrollInfo: ScrollInfo;
   onScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
   hasOnScrollFetch: boolean;
-}
-
-interface LoaderRowProps {
-  rowHeight: number;
-  columns: TableProps["columns"];
-  hasOnScrollFetch: boolean;
-  hasNextPage: React.MutableRefObject<boolean>;
-  virtualRow: any;
-  index: number;
 }
 
 interface VirtualRowProps {
@@ -37,32 +28,6 @@ interface VirtualRowProps {
   rowHeight: number;
   tableRef: React.RefObject<HTMLTableElement>;
 }
-
-const LoaderRow = memo(
-  ({
-    rowHeight,
-    columns,
-    hasOnScrollFetch,
-    hasNextPage,
-    virtualRow,
-    index,
-  }: LoaderRowProps) => (
-    <tr
-      style={{
-        height: `${rowHeight}px`,
-        transform: `translateY(${virtualRow!.start - index * virtualRow!.size}px)`,
-      }}
-    >
-      <td colSpan={columns.length} className="yh-table-loader">
-        {hasOnScrollFetch && hasNextPage.current ? (
-          <div className="yh-css-loader mx-auto"></div>
-        ) : (
-          "無更多資料"
-        )}
-      </td>
-    </tr>
-  )
-);
 
 const VirtualRows = memo(
   ({
@@ -107,35 +72,31 @@ const VirtualRows = memo(
   )
 );
 
-const NonVirtualRows = memo(
-  ({
-    tableData,
-    columns,
-    scrollInfo,
-    tableRef,
-  }: {
-    tableData: any[];
-    columns: TableProps["columns"];
-    scrollInfo: ScrollInfo;
-    tableRef: React.RefObject<HTMLTableElement>;
-  }) => (
-    <>
-      {tableData.map((row, rowIndex) => (
-        <TableRow
-          tableRef={tableRef}
-          key={rowIndex}
-          index={rowIndex}
-          row={row}
-          columns={columns}
-          scrollInfo={scrollInfo}
-        />
-      ))}
-    </>
-  ),
-  (prevProps, nextProps) => {
-    return prevProps.tableData.length === nextProps.tableData.length;
-  }
+const NonVirtualRows = ({
+  tableData,
+  columns,
+  scrollInfo,
+  tableRef,
+}: {
+  tableData: any[];
+  columns: TableProps["columns"];
+  scrollInfo: ScrollInfo;
+  tableRef: React.RefObject<HTMLTableElement>;
+}) => (
+  <>
+    {tableData.map((row, rowIndex) => (
+      <TableRow
+        tableRef={tableRef}
+        key={row.id || rowIndex}
+        index={rowIndex}
+        row={row}
+        columns={columns}
+        scrollInfo={scrollInfo}
+      />
+    ))}
+  </>
 );
+
 
 const TableBody: React.FC<TableBodyProps> = ({
   virtualScroll,

@@ -10,12 +10,13 @@
 .yh-table-head-container{
   @apply whitespace-nowrap overflow-x-hidden;
   tr:first-child th{
-    @apply border-r-0 border-t-0;
+    @apply border-t-0;
     &:first-child{
       @apply border-l-0;
     }
   }
 }
+
 
 
 .yh-table-body-container{
@@ -41,9 +42,13 @@
     @apply border-separate border-spacing-0;
     .yh-table-cell{
         @apply border-l-transparent border-t-transparent;
+        &:last-child{
+          @apply border-r-transparent
+        }
     }
   }
 }
+
 
 .yh-table-cell {
   @apply px-4 py-2 bg-white break-all border border-gray-light;
