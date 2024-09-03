@@ -20,6 +20,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Configure Git
+      run: |
+      git config --global user.name "GitHub Actions"
+      git config --global user.email "actions@github.com"
+
     - name: Build the Storybook
       run: npm run storybook:build 
 
