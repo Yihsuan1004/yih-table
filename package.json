@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build -o storybook-static",
-    "storybook:deploy": "gh-pages -d storybook-static -r git@github.com:${{ github.repository }}.git"
+    "storybook:deploy": "gh-pages -d storybook-static"
   },
   "dependencies": {
     "react": "^18.3.1",
